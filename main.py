@@ -3,9 +3,7 @@ from pandas import read_csv
 from numpy import NaN
 
 app = Flask(__name__)
-stations = read_csv("data/stations.txt", skiprows=17)[
-    ["STAID", "STANAME                                 "]
-].to_html()
+stations = read_csv("data/stations.txt", skiprows=17)[["STAID", "STANAME                                 "]].to_html()
 
 
 @app.route("/")
@@ -20,9 +18,7 @@ def temp_for_date(station, date):
         df = read_csv(filename, skiprows=20, parse_dates=["    DATE"])
         df["   TG"] = df["   TG"].replace([-9999], NaN)
         temperature = df.loc[df["    DATE"] == date]["   TG"].squeeze() / 10
-        return jsonify(
-            {"Station ID": station, "Date": date, "Temperature": temperature}
-        )
+        return jsonify({"Station ID": station, "Date": date, "Temperature": temperature})
     except TypeError:
         return {}
 
@@ -35,10 +31,7 @@ def temp_for_all_dates(station):
     df["   TG"] = df["   TG"].replace([-9999], NaN)
     result = df.loc[:, ["    DATE", "STAID", "   TG"]]
     result["   TG"] = result["   TG"].div(10)
-    result.rename(
-        columns={"    DATE": "Date", "STAID": "Station ID", "   TG": "Temperature"},
-        inplace=True,
-    )
+    result.rename(columns={"    DATE": "Date", "STAID": "Station ID", "   TG": "Temperature"}, inplace=True)
     return result.to_dict(orient="records")
 
 
@@ -54,10 +47,7 @@ def temp_for_year(station, year):
     else:
         result = result.loc[:, ["    DATE", "STAID", "   TG"]]
         result["   TG"] = result["   TG"].div(10)
-        result.rename(
-            columns={"    DATE": "Date", "STAID": "Station ID", "   TG": "Temperature"},
-            inplace=True,
-        )
+        result.rename(columns={"    DATE": "Date", "STAID": "Station ID", "   TG": "Temperature"},inplace=True)
         return result.to_dict(orient="records")
 
 
